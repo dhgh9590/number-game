@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>number-game</title>
+
+    <link rel="stylesheet" href="css/reset.css"><!-- 리셋 css -->
+    <link rel="stylesheet" href="css/style.css"><!-- 스타일 css -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700;900&display=swap" rel="stylesheet"><!-- 구글 웹폰트(Noto Sans Korean) CDN -->
+    
+</head>
+<body>
+    <section id="section1">
+        <div class="container">
+            <div class="game-wrap">
+                <h1>Up & Down 게임</h1>
+                <div id="result-area"><span>결과가 나온다</span></div>
+                <div id="chance-area"><em>남은 기회 : 5 번</em></div>
+                <input type="number" id="user-input" placeholder="정답 입력">
+                <div class="btn">
+                    <button id="play-button">Go!</button>
+                    <button id="reset-button">리셋</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <script>
+        //랜덤번호 지정
+        //유저가 번호를 입력한다 그리고 go 라는 버턴을 누름
+        //만약에 유저가 랜덤번호를 맞추면 ,맞췄습니다!
+        //랜덤번호가 < 유저본호 down!!!
+        //랜덤번호가 > 유저번호 Up!!
+        //Rest버튼을 누르면 게임이 리셋된다
+        //5번의 기회를 다쓰면 게임이 끝난다(더이상 추측 불가, 버튼이 disable)
+        //유저가 1~100 범위 밖에 숫자를 입력하면 알려준다. 기회를 깍지 않는다
+        //유저가 이미 입력한 숫자를 또 입력하면, 알려준다. 기회를 깍지 않는다.
+
+        let computerNum = 0;
+        let userInput = document.getElementById("user-input");
+        let playButton = document.getElementById("play-button");
+        let resetButton = document.getElementById("reset-button");
+        let resultArea = document.querySelector("#result-area span");
+        let chanceArea = document.querySelector("#chance-area em");
+        let chances = 5;
+        let gameOver = false;
+        let history = [];
+
+        playButton.addEventListener("click",play)
+        resetButton.addEventListener("click",reset)
+
+        userInput.addEventListener("click",function(){
+            userInput.value = "";
+        });
+
+        function pickRandomNum(){
+            computerNum = Math.floor(Math.random() * 100 +1);
+            console.log("정답",computerNum);
+        }
+
+        function play(){
+            let inputValue = userInput.value;
+
+            if(inputValue < 1 || inputValue > 100){
+                resultArea.textContent = "1이상 100이하의 값을 입력해주세요"
+                return;
+            }
+
+            if(history.includes(inputValue)){
+                resultArea.textContent = "이미 입력한 숫자입니다. 다른 숫자를 입력해 주세요."
+                return;
+            }
+
+            chances --;
+            chanceArea.textContent = `남은 기회 : ${chances} 번`;
+
+            if(inputValue < computerNum){
+                resultArea.textContent = "Up!";
+            }else if(inputValue > computerNum){
+                resultArea.textContent = "Down!";
+            }else{
+                resultArea.textContent = "정답 입니다!";
+                gameOver=true;
+            }
+
+            history.push(inputValue);
+            console.log(history);
+
+            if(chances < 1){
+                gameOver = true;
+            }
+            if(gameOver == true){
+                playButton.disabled = true;
+            }
+
+        }
+
+        function reset(){
+            userInput.value = "";
+            pickRandomNum();
+        }
+
+        pickRandomNum();
+
+
+    </script>
+    
+</body>
+</html>
